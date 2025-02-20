@@ -1,23 +1,21 @@
 "use client";
 
-import { useAuthStore } from "@/store/auth";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useGPUStore } from "@/store/gpuStore";
+import DashboardContent from "./DashboardContent";
 
 export default function Dashboard() {
-    const { user, token, logout } = useAuthStore();
-    const router = useRouter();
+    const [isClient, setIsClient] = useState(false);
+    const { gpu, fetchGPU } = useGPUStore();
 
     useEffect(() => {
-        if (!token) router.push("/login");
-    }, [token, router]);
+        setIsClient(true);
+        fetchGPU();
+    }, [fetchGPU]);
 
-    return (
-        <div className="p-6">
-            <h1 className="text-2xl">Welcome, {user}!</h1>
-            <button onClick={logout} className="mt-4 p-2 bg-red-500 text-white rounded-lg">
-                Logout
-            </button>
-        </div>
-    );
+    if (!isClient) {
+        return <div className="h-screen flex justify-center items-center text-gray-400 text-lg">Loading GPU Data...</div>;
+    }
+
+    return <DashboardContent gpu={gpu} refreshGPU={fetchGPU} />;
 }
