@@ -79,13 +79,13 @@ def book_gpu(request: BookingRequest):
     if not gpu:
         raise HTTPException(status_code=404, detail="GPU not found")
 
-    request_start = datetime.fromisoformat(request.start_time)
-    request_end = datetime.fromisoformat(request.end_time)
+    request_start = datetime.fromisoformat(request.start_time.rstrip("Z"))
+    request_end = datetime.fromisoformat(request.end_time.rstrip("Z"))
 
     for booking in gpu["bookings"]:
-        existing_start = datetime.fromisoformat(booking["start_time"])
-        existing_end = datetime.fromisoformat(booking["end_time"])
-
+        existing_start = datetime.fromisoformat(booking["start_time"].rstrip("Z"))
+        existing_end = datetime.fromisoformat(booking["end_time"].rstrip("Z"))
+        
         if request_start < existing_end and request_end > existing_start:
             raise HTTPException(
                 status_code=400,
